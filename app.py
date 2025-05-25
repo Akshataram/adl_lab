@@ -20,13 +20,13 @@ with app.app_context():
 @app.route('/download-db')
 def download_db():
     try:
-        db_path = '/tmp/market.db'
+        db_path = '/opt/render/project/src/market.db'  # Path based on your logs
         if os.path.exists(db_path):
             return send_file(db_path, as_attachment=True)
         else:
-            return f"Database file not found at {db_path}", 404
+            return f"❌ Database file not found at {db_path}", 404
     except Exception as e:
-        return f"Internal Error: {str(e)}", 500
+        return f"🔥 Internal Error: {str(e)}", 500
 
 @app.route('/')
 def index():
