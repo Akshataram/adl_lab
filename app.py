@@ -14,6 +14,11 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
+    
+@app.route('/download-db')
+def download_db():
+    from flask import send_file
+    return send_file('/tmp/market.db', as_attachment=True)
 
 @app.route('/')
 def index():
