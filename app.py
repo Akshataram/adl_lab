@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify,send_file
 from models import db, User, Product, Certification, Promotion, promotion_products, Wishlist, Order, Negotiation, Message, Announcement, Review
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
@@ -14,11 +14,17 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
-    
+
 @app.route('/download-db')
 def download_db():
-    from flask import send_file
-    return send_file('/tmp/market.db', as_attachment=True)
+    try:
+        db_path = '/tmp/market.db'
+        if os.path.exists(db_path):
+            return send_file(db_path, as_attachment=True)
+        else:
+            return f"Database file not found at {db_path}", 404
+    except Exception as e:
+        return f"Internal Error: {str(e)}", 500
 
 @app.route('/')
 def index():
