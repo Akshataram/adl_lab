@@ -9,6 +9,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///market.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'FEDE11RAl!'
+print("DATABASE URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
 db.init_app(app)
 
