@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8FB996;
+            --secondary-color: #4E6151;
+            --accent-color: #C8D5B9;
+            --text-color: #6B7B62;
+            --light-bg: #FAF9F6;
+            --card-bg: #ffffff;
+            --header-bg: rgba(255, 255, 255, 0.9);
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --success-color: #28a745;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: linear-gradient(120deg, var(--light-bg) 0%, var(--accent-color) 100%);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: var(--text-color);
+            color: white;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 2rem;
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary-color);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        th {
+            background-color: var(--light-bg);
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        .announcement-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .announcement-form input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .announcement-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        .logout-btn { margin-top: auto; background: #f87171; color: #fff; border: none; padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 1em; transition: background 0.2s; width: 100%; }
+        .logout-btn:hover { background: #ef4444; }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .status-inactive {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .announcements-list {
+            margin-top: 2rem;
+        }
+
+        .announcement-card {
+            background: var(--light-bg);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .announcement-date {
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .announcement-text {
+            color: var(--secondary-color);
+            line-height: 1.5;
+        }
+
+        .delete-announcement {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .delete-announcement:hover {
+            color: #ef4444;
+            transform: none;
+        }
+
+        .action-btn {
+            background-color: var(--primary-color);
+            margin-right: 8px;
+        }
+
+        .delete-btn {
+            background-color: var(--danger-color);
+        }
+
+        .action-btn:hover, .delete-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <h2><i class="fas fa-shield-alt"></i> Admin Panel</h2>
+            <nav>
+                <a href="#users" class="nav-link active"><i class="fas fa-users"></i> Users</a>
+                <a href="#announcements" class="nav-link"><i class="fas fa-bullhorn"></i> Announcements</a>
+                <a href="#certifications" class="nav-link"><i class="fas fa-certificate"></i> Certifications</a>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <!-- Users Section -->
+            <section id="users" class="section">
+                <h2><i class="fas fa-users"></i> User Management</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be loaded here -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Announcements Section -->
+            <section id="announcements" class="section">
+                <h2><i class="fas fa-bullhorn"></i> Send Announcement</h2>
+                <form id="announcementForm" class="announcement-form">
+                    <input type="text" id="announcementTitle" placeholder="Title" required>
+                    <input type="text" id="announcementContent" placeholder="Enter your announcement..." required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i> Send</button>
+                </form>
+                <div class="announcements-list" id="announcementsList">
+                    <!-- Announcements will be displayed here -->
+                </div>
+            </section>
+
+            <!-- Certifications Section -->
+            <section id="certifications" class="section">
+                <h2><i class="fas fa-certificate"></i> Farmer Certifications</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Farmer ID</th>
+                            <th>Type</th>
+                            <th>File</th>
+                            <th>Status</th>
+                            <th>Requested At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="certificationsTableBody">
+                        <!-- Certifications will be loaded here -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Add logout handler function
+        async function handleLogout(event) {
+            event.preventDefault();
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/index.html';
+                } else {
+                    console.error('Logout failed');
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+            }
+        }
+
+        // Load users
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+
+                const users = await response.json();
+                const tbody = document.getElementById('usersTableBody');
+                
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.name || 'N/A'}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td>
+                            <span class="status-badge status-${user.status ? user.status.toLowerCase() : 'inactive'}">
+                                ${user.status || 'Inactive'}
+                            </span>
+                        </td>
+                        <td>
+                            <button onclick="deleteUser('${user.id}')" class="delete-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading users:', error);
+                document.getElementById('usersTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--danger-color);">
+                            Error loading users. Please try again later.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Toggle user status
+        async function toggleUserStatus(userId) {
+            try {
+                const response = await fetch(`/api/users/${userId}/toggle-status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to toggle user status');
+                }
+
+                await loadUsers(); // Reload the users list
+            } catch (error) {
+                console.error('Error toggling user status:', error);
+                alert('Failed to update user status. Please try again.');
+            }
+        }
+
+        // Delete user
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete user');
+                }
+
+                await loadUsers(); // Reload the users list
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                alert('Failed to delete user. Please try again.');
+            }
+        }
+
+        // Handle announcements
+        document.getElementById('announcementForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('announcementTitle').value;
+            const content = document.getElementById('announcementContent').value;
+            
+            try {
+                const response = await fetch('/api/admin/announcements', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+                
+                const announcement = await response.json();
+                addAnnouncementToUI(announcement);
+                document.getElementById('announcementTitle').value = '';
+                document.getElementById('announcementContent').value = '';
+                alert('Announcement sent successfully!');
+            } catch (error) {
+                console.error('Error sending announcement:', error);
+                alert('Failed to send announcement');
+            }
+        });
+
+        // Load announcements
+        async function loadAnnouncements() {
+            try {
+                const response = await fetch('/api/admin/announcements');
+                const announcements = await response.json();
+                const announcementsList = document.getElementById('announcementsList');
+                
+                announcementsList.innerHTML = announcements.map(announcement => 
+                    createAnnouncementHTML(announcement)
+                ).join('');
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+            }
+        }
+
+        // Create announcement HTML
+        function createAnnouncementHTML(announcement) {
+            const date = new Date(announcement.createdAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            return `
+                <div class="announcement-card" id="announcement-${announcement.id}">
+                    <div class="announcement-header">
+                        <span class="announcement-date">
+                            <i class="fas fa-clock"></i> ${date}
+                        </span>
+                        <button class="delete-announcement" onclick="deleteAnnouncement('${announcement.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="announcement-title" style="font-weight:bold;">${announcement.title}</div>
+                    <div class="announcement-text">${announcement.content}</div>
+                </div>
+            `;
+        }
+
+        // Add new announcement to UI
+        function addAnnouncementToUI(announcement) {
+            const announcementsList = document.getElementById('announcementsList');
+            const announcementHTML = createAnnouncementHTML(announcement);
+            announcementsList.insertAdjacentHTML('afterbegin', announcementHTML);
+        }
+
+        // Delete announcement
+        async function deleteAnnouncement(id) {
+            if (!confirm('Are you sure you want to delete this announcement?')) return;
+
+            try {
+                await fetch(`/api/admin/announcements/${id}`, {
+                    method: 'DELETE'
+                });
+                document.getElementById(`announcement-${id}`).remove();
+            } catch (error) {
+                console.error('Error deleting announcement:', error);
+                alert('Failed to delete announcement');
+            }
+        }
+
+        // Add some CSS for the new buttons
+        const style = document.createElement('style');
+        style.textContent = `
+            .action-btn {
+                background-color: var(--primary-color);
+                margin-right: 8px;
+            }
+            .delete-btn {
+                background-color: var(--danger-color);
+            }
+            .action-btn:hover, .delete-btn:hover {
+                transform: translateY(-2px);
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Load users and announcements when page loads
+        loadUsers();
+        loadAnnouncements();
+
+        // Deactivate user
+        async function deactivateUser(userId) {
+            try {
+                const response = await fetch(`/api/users/${userId}/deactivate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to deactivate user');
+                }
+
+                await loadUsers(); // Refresh the user list
+            } catch (error) {
+                console.error('Error deactivating user:', error);
+                alert('Failed to deactivate user. Please try again.');
+            }
+        }
+
+        // Load certifications
+        async function loadCertifications() {
+            try {
+                const response = await fetch('/api/admin/certifications');
+                const certs = await response.json();
+                const tbody = document.getElementById('certificationsTableBody');
+                tbody.innerHTML = certs.map(cert => `
+                    <tr>
+                        <td>${cert.farmer_id}</td>
+                        <td>${cert.type}</td>
+                        <td><a href="${cert.file_path}" target="_blank">View</a></td>
+                        <td>${cert.status}</td>
+                        <td>${cert.requested_at ? new Date(cert.requested_at).toLocaleString() : ''}</td>
+                        <td>
+                            ${cert.status === 'pending' ? `
+                                <button onclick="verifyCertification(${cert.id})">Verify</button>
+                                <button onclick="rejectCertification(${cert.id})">Reject</button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading certifications:', error);
+            }
+        }
+
+        // Verify certification
+        async function verifyCertification(certId) {
+            await fetch(`/api/admin/certifications/${certId}/verify`, { method: 'POST' });
+            loadCertifications();
+        }
+
+        // Reject certification
+        async function rejectCertification(certId) {
+            await fetch(`/api/admin/certifications/${certId}/reject`, { method: 'POST' });
+            loadCertifications();
+        }
+        // Logout function
+        function logout() {
+            window.location.href = '/logout';
+        }
+        // Call this on page load
+        loadCertifications();
+    </script>
+</body>
+</html> 

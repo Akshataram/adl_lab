@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Orders</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #8FB996;
+      --secondary-color: #4E6151;
+      --accent-color: #C8D5B9;
+      --text-color: #6B7B62;
+      --light-bg: #FAF9F6;
+      --card-bg: #ffffff;
+      --header-bg: rgba(255, 255, 255, 0.9);
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      margin: 0;
+      background-color: var(--light-bg);
+      color: #222;
+      overflow-x: hidden;
+    }
+    .background-animation {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: -1;
+      background: linear-gradient(120deg, #FAF9F6 0%, #C8D5B9 100%);
+    }
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background: var(--text-color);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+      box-shadow: 2px 0 10px #0001;
+    }
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary-color);
+      justify-content: center;
+    }
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .nav-link {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .nav-link.active, .nav-link:hover {
+      background: var(--primary-color);
+      color: #fff;
+    }
+    .logout-btn {
+      margin-top: auto;
+      background: #f87171;
+      color: #fff;
+      border: none;
+      padding: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .logout-btn:hover { background: #ef4444; }
+    .main-content {
+      flex: 1;
+      padding: 3rem 2rem;
+      background: transparent;
+      min-height: 100vh;
+    }
+    .orders-section {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .orders-section h2 {
+      color: var(--secondary-color);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .order-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+    .order-table th, .order-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+    .order-table th {
+      background: #f3f4f6;
+      color: var(--secondary-color);
+    }
+    .status-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .status-badge.pending {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+    .status-badge.confirmed {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+    .status-badge.delivered {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+    .status-badge.cancelled {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    .status-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      color: white;
+      font-weight: 500;
+      z-index: 1000;
+      animation: slideIn 0.3s ease-out;
+    }
+    .status-message.success {
+      background-color: #10b981;
+    }
+    .status-message.error {
+      background-color: #ef4444;
+    }
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    @media (max-width: 900px) {
+      .main-content { padding: 20px 5px; }
+      .sidebar { width: 100px; padding: 1rem 0.2rem; }
+      .sidebar-logo { font-size: 1.1rem; }
+      .nav-link { font-size: 0.9em; padding: 0.5rem 0.5rem; }
+      .main-content { margin-left: 0; }
+      .orders-section { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-animation"></div>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i class="fa-solid fa-leaf"></i> Customer
+      </div>
+      <nav class="sidebar-nav">
+        <a href="{{ url_for('customer_dashboard') }}" class="nav-link"><i class="fa-solid fa-user"></i> Profile</a>
+<a href="{{ url_for('customer_products') }}" class="nav-link"><i class="fa-solid fa-store"></i> View Products</a>
+<a href="{{ url_for('customer_wishlist') }}" class="nav-link"><i class="fa-solid fa-heart"></i> Wishlist</a>
+<a href="{{ url_for('customer_orders') }}" class="nav-link"><i class="fa-solid fa-box"></i> Orders</a>
+<a href="{{ url_for('customer_negotiation') }}" class="nav-link"><i class="fa-solid fa-handshake"></i> Negotiation & Transactions</a>
+<a href="{{ url_for('customer_ratings') }}" class="nav-link"><i class="fa-solid fa-star"></i> Rate Products</a>
+      </nav>
+      <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </aside>
+    <main class="main-content">
+      <section class="orders-section">
+        <h2>Your Orders</h2>
+        <table class="order-table" id="ordersTable">
+          <thead>
+            <tr>
+              <th>Order ID</th><th>Product</th><th>Date</th><th>Status</th><th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Orders will be dynamically inserted here -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+  <script>
+    function fetchOrders() {
+      fetch('/api/customer/orders')
+        .then(res => {
+          if (!res.ok) {
+            return res.json().then(err => {
+              throw new Error(err.error || `HTTP error! status: ${res.status}`);
+            });
+          }
+          return res.json();
+        })
+        .then(orders => {
+          console.log('Received orders:', orders); // Debug log
+          const tbody = document.getElementById('ordersTable').querySelector('tbody');
+          tbody.innerHTML = '';
+          
+          if (!Array.isArray(orders)) {
+            console.error('Expected array of orders but got:', orders);
+            showStatus('Invalid response format', 'error');
+            return;
+          }
+          
+          if (orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No orders found</td></tr>';
+            return;
+          }
+          
+          orders.forEach(o => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${o.id}</td>
+              <td>${o.product}</td>
+              <td>${new Date(o.created_at).toLocaleDateString()}</td>
+              <td><span class="status-badge ${o.status}">${o.status}</span></td>
+              <td>₹${o.total_price.toFixed(2)}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        })
+        .catch(err => {
+          console.error('Error fetching orders:', err);
+          const tbody = document.getElementById('ordersTable').querySelector('tbody');
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Failed to load orders. Please try again.</td></tr>';
+          showStatus(err.message || 'Failed to load orders', 'error');
+        });
+    }
+
+    function showStatus(message, type) {
+      const statusDiv = document.createElement('div');
+      statusDiv.className = `status-message ${type}`;
+      statusDiv.textContent = message;
+      document.querySelector('.orders-section').appendChild(statusDiv);
+      setTimeout(() => statusDiv.remove(), 3000);
+    }
+
+    function logout() {
+      window.location.href = '/logout';
+    }
+
+    fetchOrders();
+  </script>
+</body>
+</html>

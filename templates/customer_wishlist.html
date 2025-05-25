@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wishlist</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #8FB996;
+      --secondary-color: #4E6151;
+      --accent-color: #C8D5B9;
+      --text-color: #6B7B62;
+      --light-bg: #FAF9F6;
+      --card-bg: #ffffff;
+      --header-bg: rgba(255, 255, 255, 0.9);
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      margin: 0;
+      background-color: var(--light-bg);
+      color: #222;
+      overflow-x: hidden;
+    }
+    .background-animation {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: -1;
+      background: linear-gradient(120deg, #FAF9F6 0%, #C8D5B9 100%);
+    }
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background: var(--text-color);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+      box-shadow: 2px 0 10px #0001;
+    }
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary-color);
+      justify-content: center;
+    }
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .nav-link {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .nav-link.active, .nav-link:hover {
+      background: var(--primary-color);
+      color: #fff;
+    }
+    .logout-btn {
+      margin-top: auto;
+      background: #f87171;
+      color: #fff;
+      border: none;
+      padding: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .logout-btn:hover { background: #ef4444; }
+    .main-content {
+      flex: 1;
+      padding: 3rem 2rem;
+      background: transparent;
+      min-height: 100vh;
+    }
+    .wishlist-section {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .wishlist-section h2 {
+      color: var(--secondary-color);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 30px;
+    }
+    .wishlist-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px #0001;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .wishlist-card:hover {
+      transform: translateY(-5px) scale(1.01);
+    }
+    .wishlist-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      background: #eee;
+    }
+    .wishlist-card h4 {
+      margin: 0 0 8px 0;
+      color: var(--secondary-color);
+    }
+    .wishlist-card p {
+      margin: 0 0 8px 0;
+      color: #555;
+    }
+    .wishlist-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .remove-btn, .order-btn, .negotiate-btn {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+    .remove-btn {
+      background: #f87171;
+      color: #fff;
+    }
+    .order-btn {
+      background: var(--primary-color);
+      color: #fff;
+    }
+    .negotiate-btn {
+      background: var(--secondary-color);
+      color: #fff;
+    }
+    .remove-btn:hover { background: #ef4444; }
+    .order-btn:hover { background: #6fa87a; }
+    .negotiate-btn:hover { background: #3a4d3a; }
+    @media (max-width: 900px) {
+      .main-content { padding: 20px 5px; }
+      .sidebar { width: 100px; padding: 1rem 0.2rem; }
+      .sidebar-logo { font-size: 1.1rem; }
+      .nav-link { font-size: 0.9em; padding: 0.5rem 0.5rem; }
+      .main-content { margin-left: 0; }
+      .wishlist-section { padding: 1rem; }
+      .wishlist-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-animation"></div>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i class="fa-solid fa-leaf"></i> Customer
+      </div>
+      <nav class="sidebar-nav">
+        <a href="{{ url_for('customer_dashboard') }}" class="nav-link"><i class="fa-solid fa-user"></i> Profile</a>
+        <a href="{{ url_for('customer_products') }}" class="nav-link"><i class="fa-solid fa-store"></i> View Products</a>
+        <a href="{{ url_for('customer_wishlist') }}" class="nav-link active"><i class="fa-solid fa-heart"></i> Wishlist</a>
+        <a href="{{ url_for('customer_orders') }}" class="nav-link"><i class="fa-solid fa-box"></i> Orders</a>
+        <a href="{{ url_for('customer_negotiation') }}" class="nav-link"><i class="fa-solid fa-handshake"></i> Negotiation & Transactions</a>
+        <a href="{{ url_for('customer_ratings') }}" class="nav-link"><i class="fa-solid fa-star"></i> Rate Products</a>
+      </nav>
+      <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </aside>
+    <main class="main-content">
+      <section class="wishlist-section">
+        <h2>Your Wishlist</h2>
+        <div class="wishlist-grid" id="wishlistGrid">
+          <!-- Wishlist items will be dynamically inserted here -->
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    function fetchWishlist() {
+      fetch('/api/wishlist')
+        .then(res => res.json())
+        .then(wishlist => {
+          renderWishlist(wishlist);
+        });
+    }
+
+    function renderWishlist(wishlist) {
+      const grid = document.getElementById('wishlistGrid');
+      grid.innerHTML = '';
+      if (!wishlist.length) {
+        grid.innerHTML = "<p>Your wishlist is empty.</p>";
+        return;
+      }
+      wishlist.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'wishlist-card';
+        card.innerHTML = `
+          <img src="${p.img}" alt="${p.name}">
+          <h4>${p.name}</h4>
+          <p>Category: ${p.category}</p>
+          <p>
+            Price: 
+            ${p.discounted_price < p.price
+              ? `<span style="text-decoration:line-through;color:#888;">₹${p.price.toFixed(2)}</span>
+                 <span style="color:green;font-weight:bold;margin-left:8px;">₹${p.discounted_price.toFixed(2)} (Discounted)</span>`
+              : `<span>₹${p.price.toFixed(2)}</span>`
+            }
+            / kg
+          </p>
+          <div class="wishlist-actions">
+            <div class="quantity-control">
+              <button onclick="updateQuantity('${p.id}', -1)">-</button>
+              <input type="number" id="qty-${p.id}" value="1" min="1" max="${p.quantity || 1}">
+              <button onclick="updateQuantity('${p.id}', 1)">+</button>
+            </div>
+            <button class="order-btn" onclick="placeOrder('${p.id}')"><i class="fa-solid fa-cart-plus"></i> Order Now</button>
+            <button class="remove-btn" onclick="removeFromWishlist(${p.id})"><i class="fa-solid fa-trash"></i> Remove</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function removeFromWishlist(productId) {
+      fetch(`/api/wishlist/${productId}`, {
+        method: 'DELETE'
+      })
+      .then(res => {
+        if (res.ok) fetchWishlist();
+        else alert('Failed to remove from wishlist.');
+      });
+    }
+
+    function negotiateProduct(productId) {
+      const amount = prompt('Enter your negotiation amount:');
+      if (amount) {
+        fetch('/api/negotiations', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({product_id: productId, amount: amount})
+        })
+        .then(res => {
+          if (res.ok) alert('Negotiation request sent!');
+          else alert('Failed to send negotiation.');
+        });
+      }
+    }
+
+    function logout() { window.location.href = '/logout'; }
+
+    function updateQuantity(productId, change) {
+      const input = document.getElementById(`qty-${productId}`);
+      const newValue = parseInt(input.value) + change;
+      if (newValue >= 1) {
+        input.value = newValue;
+      }
+    }
+
+    function placeOrder(productId) {
+      const quantity = parseInt(document.getElementById(`qty-${productId}`).value);
+      
+      fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          product_id: productId,
+          quantity: quantity
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showStatus('Order placed successfully!', 'success');
+          document.getElementById(`qty-${productId}`).value = 1;
+        } else {
+          showStatus(data.error || 'Failed to place order', 'error');
+        }
+      })
+      .catch(err => {
+        console.error('Error placing order:', err);
+        showStatus('Failed to place order', 'error');
+      });
+    }
+
+    function showStatus(message, type) {
+      const statusDiv = document.createElement('div');
+      statusDiv.className = `status-message ${type}`;
+      statusDiv.textContent = message;
+      document.querySelector('.wishlist-section').appendChild(statusDiv);
+      setTimeout(() => statusDiv.remove(), 3000);
+    }
+
+    fetchWishlist();
+  </script>
+</body>
+</html>

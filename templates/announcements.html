@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Announcements - Farmers Market</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #8FB996;
+            --secondary-color: #4E6151;
+            --accent-color: #C8D5B9;
+            --text-color: #6B7B62;
+            --light-bg: #FAF9F6;
+            --card-bg: #ffffff;
+            --header-bg: rgba(255, 255, 255, 0.9);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: linear-gradient(120deg, var(--light-bg) 0%, var(--accent-color) 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: var(--header-bg);
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .announcements-section {
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            color: var(--secondary-color);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .announcements-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .announcement-card {
+            background: var(--card-bg);
+            border-left: 4px solid var(--primary-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .announcement-date {
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .announcement-text {
+            color: var(--secondary-color);
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .no-announcements {
+            text-align: center;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <i class="fas fa-leaf"></i> Farmers Market
+            </a>
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="products.html" class="nav-link">Products</a>
+                <a href="announcements.html" class="nav-link">Announcements</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="announcements-section">
+            <h1 class="section-title">Latest Announcements</h1>
+            <div class="announcements-list" id="announcementsList">
+                <!-- Announcements will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Load announcements
+        async function loadAnnouncements() {
+            try {
+                const response = await fetch('/api/announcements');
+                const announcements = await response.json();
+                const announcementsList = document.getElementById('announcementsList');
+                
+                if (announcements.length === 0) {
+                    announcementsList.innerHTML = `
+                        <div class="no-announcements">
+                            <i class="fas fa-bullhorn"></i>
+                            <p>No announcements at the moment.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                announcementsList.innerHTML = announcements.map(announcement => {
+                    const date = new Date(announcement.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    return `
+                        <div class="announcement-card">
+                            <div class="announcement-header">
+                                <span class="announcement-date">
+                                    <i class="fas fa-clock"></i> ${date}
+                                </span>
+                            </div>
+                            <div class="announcement-title" style="font-weight:bold;">${announcement.title}</div>
+                            <div class="announcement-text">${announcement.content}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+                document.getElementById('announcementsList').innerHTML = `
+                    <div class="no-announcements">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Failed to load announcements. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load announcements when page loads
+        loadAnnouncements();
+    </script>
+</body>
+</html> 

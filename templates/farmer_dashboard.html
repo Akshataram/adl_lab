@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Farmer Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #8FB996;
+      --secondary-color: #4E6151;
+      --accent-color: #C8D5B9;
+      --text-color: #6B7B62;
+      --light-bg: #FAF9F6;
+      --card-bg: #ffffff;
+      --header-bg: rgba(255, 255, 255, 0.9);
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { margin: 0; background-color: var(--light-bg); color: #222; overflow-x: hidden; }
+    .background-animation { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: linear-gradient(120deg, #FAF9F6 0%, #C8D5B9 100%);}
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: var(--text-color); color: #fff; display: flex; flex-direction: column; padding: 2rem 1rem; min-height: 100vh; }
+    .sidebar-logo { font-size: 1.5rem; font-weight: bold; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 1.5rem; }
+    .nav-link { color: #fff; text-decoration: none; font-size: 1.1rem; display: flex; align-items: center; gap: 0.7rem; padding: 0.5rem 1rem; border-radius: 8px; transition: background 0.2s; }
+    .nav-link.active, .nav-link:hover { background: var(--primary-color); }
+    .logout-btn { margin-top: auto; background: #f87171; color: #fff; border: none; padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 1em; transition: background 0.2s; width: 100%; }
+    .logout-btn:hover { background: #ef4444; }
+    .main-content { flex: 1; padding: 3rem 2rem; background: transparent; min-height: 100vh; }
+    .dashboard-header { text-align: center; margin-bottom: 3rem; }
+    .dashboard-header h1 { color: var(--secondary-color); font-size: 2.5rem; margin-bottom: 1rem; }
+    .dashboard-header p { color: var(--text-color); font-size: 1.2rem; }
+    .dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
+    .stat-card { background: var(--card-bg); padding: 2rem; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease; }
+    .stat-card:hover { transform: translateY(-5px);}
+    .stat-card i { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem;}
+    .stat-card h3 { color: var(--secondary-color); margin-bottom: 0.5rem;}
+    .stat-card p { color: var(--text-color); font-size: 1.5rem; font-weight: bold;}
+    @media (max-width: 900px) {
+      .main-content { padding: 20px 5px; }
+      .sidebar { width: 100px; padding: 1rem 0.2rem; }
+      .sidebar-logo { font-size: 1.1rem; }
+      .nav-link { font-size: 0.9em; padding: 0.5rem 0.5rem; }
+      .main-content { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-animation"></div>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><i class="fas fa-seedling"></i> <span>Farmer Menu</span></div>
+      <nav class="sidebar-nav">
+        <a href="{{ url_for('farmer_dashboard') }}" class="nav-link active"><i class="fas fa-chart-bar"></i> Dashboard</a>
+        <a href="{{ url_for('farmer_products') }}" class="nav-link"><i class="fas fa-box"></i> Products</a>
+        <a href="{{ url_for('farmer_orders') }}" class="nav-link"><i class="fas fa-shopping-cart"></i> Orders</a>
+        <a href="{{ url_for('farmer_promotions') }}" class="nav-link"><i class="fas fa-bullhorn"></i> Promotions</a>
+        <a href="{{ url_for('farmer_negotiation') }}" class="nav-link"><i class="fas fa-handshake"></i> Negotiations</a>
+        <a href="{{ url_for('farmer_profile') }}" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+      </nav>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </aside>
+    <main class="main-content">
+      <section class="dashboard-header">
+        <h1>Farmer Dashboard</h1>
+        <p>Manage your products and track your sales</p>
+      </section>
+      <div class="dashboard-stats">
+        <div class="stat-card">
+          <i class="fas fa-box"></i>
+          <h3>Total Products</h3>
+          <p id="totalProducts">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-cubes"></i>
+          <h3>Total Quantity</h3>
+          <p id="totalQuantity">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-plus-circle"></i>
+          <h3>Last Product Added</h3>
+          <p id="lastProduct">None</p>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script>
+    async function updateDashboardStats() {
+      try {
+        const res = await fetch('/api/farmer/products', { credentials: 'include' });
+        const products = await res.json();
+        document.getElementById('totalProducts').textContent = products.length;
+        const totalQuantity = products.reduce((sum, product) => sum + (product.quantity || 0), 0);
+        document.getElementById('totalQuantity').textContent = totalQuantity;
+        let lastProduct = "None";
+        if (products.length > 0) {
+          const last = products.reduce((a, b) => new Date(a.dateAdded) > new Date(b.dateAdded) ? a : b);
+          lastProduct = last.name;
+        }
+        document.getElementById('lastProduct').textContent = lastProduct;
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+      }
+    }
+    function logout() {
+      window.location.href = '/logout';
+    }
+    updateDashboardStats();
+  </script>
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Farmers Direct Market</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #8FB996;
+      --secondary-color: #4E6151;
+      --accent-color: #C8D5B9;
+      --text-color: #6B7B62;
+      --light-bg: #FAF9F6;
+      --card-bg: #ffffff;
+      --header-bg: rgba(255, 255, 255, 0.95);
+      --gradient-start: #FAF9F6;
+      --gradient-end: #C8D5B9;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      overflow-x: hidden;
+      background-color: var(--light-bg);
+    }
+    .background-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      background: linear-gradient(120deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+      opacity: 0.8;
+    }
+    header {
+      background-color: var(--header-bg);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-links a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    .nav-links a.active,
+    .nav-links a:hover {
+      color: var(--primary-color);
+    }
+    main {
+      margin-top: 80px;
+      padding: 2rem 5%;
+    }
+    .hero {
+      text-align: center;
+      padding: 6rem 0;
+      color: var(--text-color);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
+      opacity: 0.1;
+      z-index: -1;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--secondary-color);
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #666;
+    }
+    .cta-button {
+      background-color: var(--accent-color);
+      color: var(--text-color);
+      font-size: 1.1rem;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-color: var(--primary-color);
+      color: #fff;
+    }
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin: 4rem 0;
+    }
+    .feature-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      width: 300px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-10px);
+    }
+    .feature-card i {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    .products-showcase {
+      padding: 4rem 0;
+      background-color: white;
+    }
+    .products-showcase h2 {
+      text-align: center;
+      color: var(--secondary-color);
+      margin-bottom: 3rem;
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 0 5%;
+    }
+    .product-card {
+      background: var(--light-bg);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+    .product-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .product-info {
+      padding: 1.5rem;
+    }
+    .product-info h3 {
+      color: var(--secondary-color);
+      margin-bottom: 0.5rem;
+    }
+    .product-info p {
+      color: var(--text-color);
+      margin-bottom: 1rem;
+    }
+    .product-price {
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    .reviews-showcase {
+      padding: 4rem 0;
+      background-color: var(--light-bg);
+    }
+    .reviews-showcase h2 {
+      text-align: center;
+      color: var(--secondary-color);
+      margin-bottom: 3rem;
+    }
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      padding: 0 5%;
+    }
+    .review-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    .review-card::before {
+      content: '★';
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      font-size: 2rem;
+      color: var(--primary-color);
+      opacity: 0.2;
+    }
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .review-product {
+      font-weight: bold;
+      color: var(--secondary-color);
+    }
+    .review-rating {
+      color: #ffd700;
+      font-size: 1.2rem;
+    }
+    .review-text {
+      margin-bottom: 1rem;
+      font-style: italic;
+      color: var(--text-color);
+    }
+    .review-author {
+      font-size: 0.9rem;
+      color: var(--text-color);
+    }
+    .no-reviews {
+      text-align: center;
+      color: var(--text-color);
+      font-size: 1.2rem;
+      padding: 2rem;
+      background: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .stats-section {
+      padding: 4rem 0;
+      background-color: var(--light-bg);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      padding: 0 5%;
+      text-align: center;
+    }
+    .stat-card {
+      padding: 2rem;
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+    .stat-label {
+      color: var(--text-color);
+    }
+    footer {
+      background-color: var(--secondary-color);
+      color: white;
+      padding: 4rem 5%;
+    }
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .footer-section h3 {
+      margin-bottom: 1rem;
+    }
+    .footer-section ul {
+      list-style: none;
+    }
+    .footer-section ul li {
+      margin-bottom: 0.5rem;
+    }
+    .footer-section a {
+      color: white;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .footer-section a:hover {
+      color: var(--accent-color);
+    }
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .social-links a {
+      color: white;
+      font-size: 1.5rem;
+    }
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2rem; }
+      .features { flex-direction: column; align-items: center; }
+      .feature-card { width: 100%; max-width: 300px; }
+    }
+    .section-title {
+      color: var(--secondary-color);
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .announcements-section {
+      margin-top: 2rem;
+      padding: 2rem 0;
+    }
+    .announcements-list {
+      display: grid;
+      gap: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .announcement-card {
+      background: var(--card-bg);
+      border-left: 4px solid var(--primary-color);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .announcement-card:hover {
+      transform: translateY(-2px);
+    }
+    .announcement-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .announcement-date {
+      color: var(--text-color);
+      font-size: 0.9rem;
+    }
+    .announcement-title {
+      font-weight: bold;
+    }
+    .announcement-text {
+      color: var(--secondary-color);
+      line-height: 1.6;
+      font-size: 1.1rem;
+    }
+    .view-all-link {
+      display: block;
+      text-align: center;
+      margin-top: 2rem;
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    .view-all-link:hover {
+      color: var(--secondary-color);
+    }
+    .no-announcements {
+      text-align: center;
+      color: var(--text-color);
+      font-size: 1.2rem;
+      padding: 2rem;
+      background: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="background-animation"></div>
+  <header>
+    <nav>
+      <div class="logo">Farmers Direct</div>
+      <div class="nav-links">
+        <a href="{{ url_for('index') }}" class="active">Home</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('signup') }}">Sign Up</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>Welcome to Farmers Direct Market</h1>
+      <p>Connecting local farmers directly with customers. Fresh, sustainable, and fair.</p>
+      <a href="{{ url_for('signup') }}" class="cta-button">Get Started</a>
+    </section>
+    <section class="announcements-section">
+      <h2 class="section-title">Announcements</h2>
+      <div class="announcements-list" id="announcementsList">
+        <!-- Announcements will be loaded here -->
+      </div>
+    </section>
+    <section class="features">
+      <div class="feature-card">
+        <i class="fas fa-seedling"></i>
+        <h3>Fresh Produce</h3>
+        <p>Get the freshest produce directly from local farmers, no middlemen.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-handshake"></i>
+        <h3>Fair Prices</h3>
+        <p>Support farmers and enjoy fair, transparent pricing for all products.</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-leaf"></i>
+        <h3>Sustainable Choices</h3>
+        <p>Choose from a variety of sustainable and organic products.</p>
+      </div>
+    </section>
+    <section class="products-showcase">
+      <h2>Featured Products</h2>
+      <div class="products-grid" id="productsGrid">
+        <!-- Products will be loaded here -->
+      </div>
+    </section>
+    <section class="reviews-showcase">
+      <h2>Featured Reviews</h2>
+      <div class="reviews-grid" id="reviewsGrid">
+        <!-- Reviews will be loaded here -->
+      </div>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>About Us</h3>
+        <p>Farmers Direct Market is a revolutionary platform that bridges the gap between local farmers and consumers. We believe in sustainable agriculture, fair trade practices, and providing the freshest produce directly from farm to table. Our mission is to support local farming communities while making fresh, organic produce accessible to everyone.</p>
+        <div class="social-links">
+          <a href="https://facebook.com/farmersdirect"><i class="fab fa-facebook"></i></a>
+          <a href="https://twitter.com/farmersdirect"><i class="fab fa-twitter"></i></a>
+          <a href="https://instagram.com/farmersdirect"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h3>Contact Us</h3>
+        <ul>
+          <li><i class="fas fa-phone"></i> <a href="tel:+919876543210">+91 98765 43210</a></li>
+          <li><i class="fas fa-envelope"></i> <a href="mailto:farmersdirectindia@gmail.com">farmersdirectindia@gmail.com</a></li>
+          <li><i class="fas fa-map-marker-alt"></i> <a href="https://maps.google.com" target="_blank">45 Race Course Road, R.S. Puram, Coimbatore, Tamil Nadu 641002</a></li>
+          <li><i class="fas fa-clock"></i> Mon-Sat: 9AM - 9PM IST</li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="https://kit.fontawesome.com/4e7b8e6e8b.js" crossorigin="anonymous"></script>
+  <script>
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(products => {
+        const grid = document.getElementById('productsGrid');
+        grid.innerHTML = '';
+        products.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+          card.innerHTML = `
+            <img src="${p.image}" alt="${p.name}" class="product-image">
+            <div class="product-info">
+              <h3>${p.name}</h3>
+              <p>${p.description}</p>
+              <p class="product-price">${p.price}</p>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+
+    // Load announcements
+    async function loadAnnouncements() {
+      try {
+        const response = await fetch('/api/announcements');
+        const announcements = await response.json();
+        const announcementsList = document.getElementById('announcementsList');
+        
+        if (announcements.length === 0) {
+          announcementsList.innerHTML = `
+            <div class="no-announcements">
+              <i class="fas fa-bullhorn"></i>
+              <p>No announcements at the moment.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        announcementsList.innerHTML = announcements.map(announcement => {
+          const date = new Date(announcement.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
+          return `
+            <div class="announcement-card">
+              <div class="announcement-header">
+                <span class="announcement-date">
+                  <i class="fas fa-clock"></i> ${date}
+                </span>
+              </div>
+              <div class="announcement-title" style="font-weight:bold;">${announcement.title}</div>
+              <div class="announcement-text">${announcement.content}</div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('Error loading announcements:', error);
+        document.getElementById('announcementsList').innerHTML = `
+          <div class="no-announcements">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>Failed to load announcements. Please try again later.</p>
+          </div>
+        `;
+      }
+    }
+    async function loadReviews() {
+    try {
+      const response = await fetch('/api/reviews');
+      const reviews = await response.json();
+      const reviewsGrid = document.getElementById('reviewsGrid');
+      
+      if (reviews.length === 0) {
+        reviewsGrid.innerHTML = `
+          <div class="no-reviews">
+            <i class="fas fa-star"></i>
+            <p>No reviews available at the moment.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      reviewsGrid.innerHTML = reviews.map(review => {
+        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        return `
+          <div class="review-card">
+            <div class="review-header">
+              <span class="review-product">${review.product_name}</span>
+              <span class="review-rating">${stars}</span>
+            </div>
+            <p class="review-text">"${review.review_text || 'No comment provided.'}"</p>
+            <div class="review-author">— ${review.customer_name}</div>
+          </div>
+        `;
+      }).join('');
+    } catch (error) {
+      console.error('Error loading reviews:', error);
+      document.getElementById('reviewsGrid').innerHTML = `
+        <div class="no-reviews">
+          <i class="fas fa-exclamation-circle"></i>
+          <p>Failed to load reviews. Please try again later.</p>
+        </div>
+      `;
+    }
+  }
+    // Load all data on page load
+    window.onload = function() {
+      loadAnnouncements();
+      loadReviews();
+    };
+  </script>
+</body>
+</html>

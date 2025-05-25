@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Farmer Products</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root { --primary-color: #8FB996; --secondary-color: #4E6151; --accent-color: #C8D5B9; --text-color: #6B7B62; --light-bg: #FAF9F6; --card-bg: #ffffff; --header-bg: rgba(255, 255, 255, 0.9);}
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { margin: 0; background-color: var(--light-bg); color: #222; overflow-x: hidden; }
+    .background-animation { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: linear-gradient(120deg, #FAF9F6 0%, #C8D5B9 100%);}
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: var(--text-color); color: #fff; display: flex; flex-direction: column; padding: 2rem 1rem; min-height: 100vh; }
+    .sidebar-logo { font-size: 1.5rem; font-weight: bold; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 1.5rem; }
+    .nav-link { color: #fff; text-decoration: none; font-size: 1.1rem; display: flex; align-items: center; gap: 0.7rem; padding: 0.5rem 1rem; border-radius: 8px; transition: background 0.2s; }
+    .nav-link.active, .nav-link:hover { background: var(--primary-color); }
+    .logout-btn { margin-top: auto; background: #f87171; color: #fff; border: none; padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 1em; transition: background 0.2s; width: 100%; }
+    .logout-btn:hover { background: #ef4444; }
+    .main-content { flex: 1; padding: 3rem 2rem; background: transparent; min-height: 100vh; }
+    .product-management { background: var(--card-bg); padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); margin-bottom: 3rem; }
+    .product-management h2 { color: var(--secondary-color); margin-bottom: 2rem; text-align: center; }
+    .product-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    .form-group label { color: var(--text-color); font-weight: 500; }
+    .form-group input { padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s ease; }
+    .form-group input:focus { border-color: var(--primary-color); outline: none; }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    .image-preview { width: 100%; height: 200px; border: 2px dashed var(--primary-color); border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s ease; }
+    .image-preview i { font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem; }
+    .image-preview p { color: var(--text-color); }
+    .image-preview:hover { background-color: rgba(143, 185, 150, 0.1);}
+    .image-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+    .submit-btn { 
+      background: var(--primary-color); 
+      color: white; 
+      border: none; 
+      padding: 1rem 2rem; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-size: 1.1rem; 
+      font-weight: 600;
+      transition: all 0.3s ease;
+      grid-column: 1 / -1;
+    }
+    .submit-btn:hover { 
+      background: var(--secondary-color); 
+      transform: translateY(-2px);
+    }
+    .cancel-btn {
+      background: #f87171;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      grid-column: 1 / -1;
+      display: none;
+    }
+    .cancel-btn:hover {
+      background: #ef4444;
+      transform: translateY(-2px);
+    }
+    .products-list { background: var(--card-bg); padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);}
+    .products-list h2 { color: var(--secondary-color); margin-bottom: 2rem; text-align: center;}
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem;}
+    .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease;}
+    .product-card:hover { transform: translateY(-5px);}
+    .product-image { width: 100%; height: 200px; object-fit: cover;}
+    .product-info { padding: 1.5rem;}
+    .product-info h3 { color: var(--secondary-color); margin-bottom: 0.5rem;}
+    .product-info p { color: var(--text-color); margin-bottom: 0.5rem;}
+    .product-description { color: var(--text-color); font-size: 0.9rem; margin-bottom: 1rem; }
+    .product-actions { display: flex; justify-content: space-between; margin-top: 1rem;}
+    .product-actions button { padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer; transition: all 0.3s ease;}
+    .edit-btn { background-color: var(--primary-color); color: white;}
+    .delete-btn { background-color: #ff4444; color: white;}
+    .product-actions button:hover { opacity: 0.9; transform: translateY(-2px);}
+    .status-message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      text-align: center;
+      display: none;
+    }
+    .status-message.success {
+      background-color: #d4edda;
+      color: #155724;
+      display: block;
+    }
+    .status-message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+    @media (max-width: 900px) {
+      .main-content { padding: 20px 5px; }
+      .sidebar { width: 100px; padding: 1rem 0.2rem; }
+      .sidebar-logo { font-size: 1.1rem; }
+      .nav-link { font-size: 0.9em; padding: 0.5rem 0.5rem; }
+      .main-content { margin-left: 0; }
+      .product-management, .products-list { padding: 1rem; }
+      .products-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-animation"></div>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><i class="fas fa-seedling"></i> <span>Farmer Menu</span></div>
+      <nav class="sidebar-nav">
+        <a href="{{ url_for('farmer_dashboard')}}" class="nav-link {% if request.endpoint == 'farmer_dashboard' %}active{% endif %}">
+          <i class="fas fa-chart-bar"></i> Dashboard
+        </a>
+        <a href="{{ url_for('farmer_products')}}" class="nav-link {% if request.endpoint == 'farmer_products' %}active{% endif %}">
+          <i class="fas fa-box"></i> Products
+        </a>
+        <a href="{{ url_for('farmer_orders')}}" class="nav-link {% if request.endpoint == 'farmer_orders' %}active{% endif %}">
+          <i class="fas fa-shopping-cart"></i> Orders
+        </a>
+        <a href="{{ url_for('farmer_promotions')}}" class="nav-link {% if request.endpoint == 'farmer_promotions' %}active{% endif %}">
+          <i class="fas fa-bullhorn"></i> Promotions
+        </a>
+        <a href="{{ url_for('farmer_negotiation')}}" class="nav-link {% if request.endpoint == 'farmer_negotiation' %}active{% endif %}">
+          <i class="fas fa-handshake"></i> Negotiations
+        </a>
+        <a href="{{ url_for('farmer_profile')}}" class="nav-link {% if request.endpoint == 'farmer_profile' %}active{% endif %}">
+          <i class="fas fa-user"></i> Profile
+        </a>
+      </nav>
+      <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </aside>
+    <main class="main-content">
+      <div class="product-management">
+        <h2 id="formTitle">Add New Product</h2>
+        <form id="productForm" class="product-form">
+          <div class="form-group">
+            <label for="productName">Product Name</label>
+            <input type="text" id="productName" required>
+          </div>
+          <div class="form-group">
+            <label for="productPrice">Price (₹)</label>
+            <input type="number" id="productPrice" step="0.01" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="productQuantity">Quantity</label>
+            <input type="number" id="productQuantity" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="productImage">Product Image</label>
+            <input type="file" id="productImage" accept="image/*">
+            <div class="image-preview" id="imagePreview">
+              <i class="fas fa-image"></i>
+              <p>No image selected</p>
+            </div>
+          </div>
+          <button type="submit" class="submit-btn" id="submitBtn">Add Product</button>
+          <button type="button" class="cancel-btn" id="cancelBtn">Cancel Edit</button>
+          <div class="status-message" id="statusMessage"></div>
+        </form>
+      </div>
+      <div class="products-list">
+        <h2>Your Products</h2>
+        <div class="products-grid" id="productsGrid">
+          <!-- Products will be dynamically added here -->
+        </div>
+      </div>
+    </main>
+  </div>
+  <script>
+    let products = [];
+    let editingProductId = null;
+    const imageInput = document.getElementById('productImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const formTitle = document.getElementById('formTitle');
+    const submitBtn = document.getElementById('submitBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const statusMessage = document.getElementById('statusMessage');
+
+    function showStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status-message ${type}`;
+      setTimeout(() => {
+        statusMessage.style.display = 'none';
+      }, 3000);
+    }
+
+    function resetForm() {
+      document.getElementById('productForm').reset();
+      imagePreview.innerHTML = `<i class="fas fa-image"></i><p>No image selected</p>`;
+      formTitle.textContent = 'Add New Product';
+      submitBtn.textContent = 'Add Product';
+      cancelBtn.style.display = 'none';
+      editingProductId = null;
+    }
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append('name', document.getElementById('productName').value);
+      formData.append('price', document.getElementById('productPrice').value);
+      formData.append('quantity', document.getElementById('productQuantity').value);
+      
+      if (imageInput.files[0]) {
+        formData.append('image', imageInput.files[0]);
+      }
+
+      try {
+        const url = editingProductId 
+          ? `/api/farmer/products/${editingProductId}`
+          : '/api/farmer/products';
+        
+        const method = editingProductId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+          method: method,
+          body: formData,
+          credentials: 'include'
+        });
+
+        if (!response.ok) throw new Error('Failed to save product');
+
+        showStatus(
+          editingProductId ? 'Product updated successfully!' : 'Product added successfully!',
+          'success'
+        );
+        
+        await displayProducts();
+        resetForm();
+      } catch (err) {
+        showStatus('Failed to save product. Please try again.', 'error');
+      }
+    });
+
+    cancelBtn.addEventListener('click', resetForm);
+
+    async function displayProducts() {
+      try {
+        const res = await fetch('/api/farmer/products', { credentials: 'include' });
+        products = await res.json();
+        const productsGrid = document.getElementById('productsGrid');
+        productsGrid.innerHTML = '';
+        products.forEach(product => {
+          const productCard = document.createElement('div');
+          productCard.className = 'product-card';
+          productCard.innerHTML = `
+            <img src="${product.image}" alt="${product.name}" class="product-image">
+            <div class="product-info">
+              <h3>${product.name}</h3>
+              <p>
+                Price: 
+                <input type="number" min="0" step="0.01" value="${product.price}" id="price-${product.id}" style="width:80px;">
+                ${product.discounted_price && product.discounted_price < product.price
+                  ? `<span style="color: red; font-weight: bold;"> (Discounted: ₹${product.discounted_price.toFixed(2)})</span>`
+                  : ''}
+                <button onclick="updateProductPrice('${product.id}')">Update Price</button>
+              </p>
+              <p>
+                Quantity: 
+                <input type="number" min="0" value="${product.quantity}" id="qty-${product.id}" style="width:60px;">
+                <button onclick="updateProductQuantity('${product.id}')">Update Quantity</button>
+              </p>
+              <p>Added: ${new Date(product.dateAdded).toLocaleDateString()}</p>
+              <div class="product-actions">
+                <button class="delete-btn" onclick="deleteProduct('${product.id}')"><i class="fas fa-trash"></i> Delete</button>
+              </div>
+            </div>
+          `;
+          productsGrid.appendChild(productCard);
+        });
+      } catch (err) {
+        showStatus('Failed to load products. Please try again.', 'error');
+      }
+    }
+
+    window.editProduct = async (id) => {
+      try {
+        const res = await fetch(`/api/farmer/products/${id}`, { credentials: 'include' });
+        const product = await res.json();
+        if (product) {
+          document.getElementById('productName').value = product.name;
+          document.getElementById('productPrice').value = product.price;
+          document.getElementById('productQuantity').value = product.quantity;
+          imagePreview.innerHTML = `<img src="${product.image}" alt="Preview">`;
+          
+          formTitle.textContent = 'Edit Product';
+          submitBtn.textContent = 'Update Product';
+          cancelBtn.style.display = 'block';
+          editingProductId = id;
+          
+          // Scroll to form
+          document.querySelector('.product-management').scrollIntoView({ behavior: 'smooth' });
+        }
+      } catch (err) {
+        showStatus('Failed to load product for editing.', 'error');
+      }
+    };
+
+    window.updateProduct = async function(id) {
+      const qty = document.getElementById(`qty-${id}`).value;
+      const price = document.getElementById(`price-${id}`).value;
+      try {
+        const response = await fetch(`/api/farmer/products/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity: qty, price: price })
+        });
+        const result = await response.json();
+        if (result.success) {
+          showStatus('Product updated!', 'success');
+          await displayProducts();
+        } else {
+          showStatus('Failed to update product.', 'error');
+        }
+      } catch (err) {
+        showStatus('Error updating product.', 'error');
+      }
+    };
+
+    window.deleteProduct = async function(id) {
+      if (confirm('Are you sure you want to delete this product?')) {
+        try {
+          const response = await fetch(`/api/farmer/products/${id}`, {
+            method: 'DELETE'
+          });
+          const result = await response.json();
+          if (result.success) {
+            showStatus('Product deleted!', 'success');
+            await displayProducts();
+          } else {
+            showStatus('Failed to delete product.', 'error');
+          }
+        } catch (err) {
+          showStatus('Error deleting product.', 'error');
+        }
+      }
+    };
+
+    window.updateProductPrice = async function(id) {
+      const price = document.getElementById(`price-${id}`).value;
+      try {
+        const response = await fetch(`/api/farmer/products/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ price: price })
+        });
+        const result = await response.json();
+        if (result.success) {
+          showStatus('Price updated!', 'success');
+          await displayProducts();
+        } else {
+          showStatus('Failed to update price.', 'error');
+        }
+      } catch (err) {
+        showStatus('Error updating price.', 'error');
+      }
+    };
+
+    window.updateProductQuantity = async function(id) {
+      const qty = document.getElementById(`qty-${id}`).value;
+      try {
+        const response = await fetch(`/api/farmer/products/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity: qty })
+        });
+        const result = await response.json();
+        if (result.success) {
+          showStatus('Quantity updated!', 'success');
+          await displayProducts();
+        } else {
+          showStatus('Failed to update quantity.', 'error');
+        }
+      } catch (err) {
+        showStatus('Error updating quantity.', 'error');
+      }
+    };
+
+    function logout() {
+      window.location.href = '/logout';
+    }
+
+    displayProducts();
+  </script>
+</body>
+</html>

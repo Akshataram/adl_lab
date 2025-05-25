@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up - Farmers Direct</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary-color: #8FB996;
+      --secondary-color: #4E6151;
+      --accent-color: #C8D5B9;
+      --text-color: #6B7B62;
+      --light-bg: #FAF9F6;
+      --card-bg: #ffffff;
+      --header-bg: rgba(255, 255, 255, 0.9);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--light-bg); }
+    .background-animation { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: linear-gradient(120deg, #FAF9F6 0%, #C8D5B9 100%);}
+    header { background-color: var(--header-bg); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: fixed; width: 100%; top: 0; z-index: 1000; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; max-width: 1200px; margin: 0 auto; }
+    .logo { display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: bold; color: var(--primary-color);}
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-links a { color: var(--text-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+    .nav-links a.active, .nav-links a:hover { color: var(--primary-color);}
+    .signup-container { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .signup-card { background: rgba(255,255,255,0.95); border-radius: 18px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18); padding: 2.5rem 2rem 2rem 2rem; width: 100%; max-width: 350px; display: flex; flex-direction: column; align-items: center; }
+    .signup-card h2 { margin-bottom: 1.5rem; font-size: 1.6rem; color: #222; font-weight: 700; text-align: center; }
+    .signup-card form { width: 100%; display: flex; flex-direction: column; gap: 1.1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .signup-card label { font-size: 1rem; color: #444; }
+    .signup-card input[type="email"], .signup-card input[type="password"], .signup-card input[type="text"], .signup-card select { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #e0e0e0; border-radius: 8px; font-size: 1rem; background: #f9f9f9; transition: border 0.2s; }
+    .signup-card input:focus, .signup-card select:focus { border: 1.5px solid #4CAF50; outline: none; background: #fff; }
+    .signup-card .submit-btn { margin-top: 0.5rem; background: linear-gradient(90deg, #4CAF50 60%, #2E7D32 100%); color: #fff; border: none; border-radius: 8px; padding: 0.9rem 0; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(76,175,80,0.08); transition: background 0.2s, transform 0.2s; }
+    .signup-card .submit-btn:hover { background: linear-gradient(90deg, #388e3c 60%, #2E7D32 100%); transform: translateY(-2px) scale(1.01);}
+    .form-message { margin-top: 0.5rem; text-align: center; font-size: 1rem; }
+    .login-link { margin-top: 1.2rem; font-size: 0.98rem; color: #444; }
+    .login-link a { color: #388e3c; text-decoration: none; font-weight: 600; }
+    .login-link a:hover { text-decoration: underline; }
+    @media (max-width: 600px) { .signup-card { padding: 1.5rem 0.5rem; max-width: 98vw; } }
+  </style>
+</head>
+<body>
+  <div class="background-animation"></div>
+  <header>
+    <nav>
+      <div class="logo"><span>Farmers Direct</span></div>
+      <div class="nav-links">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('signup') }}">Sign Up</a>
+      </div>
+    </nav>
+  </header>
+  <div class="signup-container">
+    <div class="signup-card">
+      <h2>Sign Up</h2>
+      <form method="POST" action="{{ url_for('signup') }}">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="text" name="phone" required>
+        </div>
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select name="role" required>
+            <option value="customer">Customer</option>
+            <option value="farmer">Farmer</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" name="password" required>
+        </div>
+        <button type="submit" class="submit-btn">Sign Up</button>
+      </form>
+      <div class="form-message" id="signupMessage"></div>
+      <div class="login-link">
+        Already have an account? <a href="{{ url_for('login') }}">Login</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

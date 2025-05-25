@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rate Products - Customer Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #8FB996;
+      --secondary-color: #4E6151;
+      --accent-color: #C8D5B9;
+      --text-color: #6B7B62;
+      --light-bg: #FAF9F6;
+      --card-bg: #ffffff;
+      --header-bg: rgba(255, 255, 255, 0.9);
+    }
+    * { 
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      margin: 0;
+      background-color: var(--light-bg);
+      color: #222;
+      overflow-x: hidden;
+    }
+    .background-animation {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: -1;
+      background: linear-gradient(120deg, #FAF9F6 0%, #C8D5B9 100%);
+    }
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background: var(--text-color);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+      box-shadow: 2px 0 10px #0001;
+    }
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary-color);
+      justify-content: center;
+    }
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .nav-link {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .nav-link.active, .nav-link:hover {
+      background: var(--primary-color);
+      color: #fff;
+    }
+    .logout-btn {
+      margin-top: auto;
+      background: #f87171;
+      color: #fff;
+      border: none;
+      padding: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .logout-btn:hover { background: #ef4444; }
+    .main-content {
+      flex: 1;
+      padding: 3rem 2rem;
+      background: transparent;
+      min-height: 100vh;
+    }
+    .ratings-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: var(--card-bg);
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .ratings-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .ratings-header i {
+      font-size: 2rem;
+      color: var(--primary-color);
+    }
+    .ratings-header h2 {
+      color: var(--secondary-color);
+      font-size: 2rem;
+      margin: 0;
+    }
+    .product-select {
+      margin-bottom: 2rem;
+    }
+    .product-select label {
+      display: block;
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+    }
+    .product-select select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    .rating-stars {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .star {
+      font-size: 2rem;
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .star.active {
+      color: #ffd700;
+    }
+    .review-section {
+      margin-top: 2rem;
+    }
+    .review-section label {
+      display: block;
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+    }
+    .review-section textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      min-height: 120px;
+      resize: vertical;
+      font-size: 1rem;
+    }
+    .submit-button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 1rem;
+      transition: background-color 0.2s;
+    }
+    .submit-button:hover {
+      background-color: var(--secondary-color);
+    }
+    .status-message {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 5px;
+      display: none;
+    }
+    .status-message.success {
+      background-color: #d4edda;
+      color: #155724;
+      display: block;
+    }
+    .status-message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+    @media (max-width: 900px) {
+      .main-content { padding: 20px 5px; }
+      .sidebar { width: 100px; padding: 1rem 0.2rem; }
+      .sidebar-logo { font-size: 1.1rem; }
+      .nav-link { font-size: 0.9em; padding: 0.5rem 0.5rem; }
+      .main-content { margin-left: 0; }
+      .ratings-container { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="background-animation"></div>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i class="fa-solid fa-leaf"></i> Customer
+      </div>
+      <nav class="sidebar-nav">
+        <a href="{{ url_for('customer_dashboard') }}" class="nav-link"><i class="fa-solid fa-user"></i> Profile</a>
+        <a href="{{ url_for('customer_products') }}" class="nav-link"><i class="fa-solid fa-store"></i> View Products</a>
+        <a href="{{ url_for('customer_wishlist') }}" class="nav-link"><i class="fa-solid fa-heart"></i> Wishlist</a>
+        <a href="{{ url_for('customer_orders') }}" class="nav-link"><i class="fa-solid fa-box"></i> Orders</a>
+        <a href="{{ url_for('customer_negotiation') }}" class="nav-link"><i class="fa-solid fa-handshake"></i> Negotiation & Transactions</a>
+        <a href="{{ url_for('customer_ratings') }}" class="nav-link active"><i class="fa-solid fa-star"></i> Rate Products</a>
+      </nav>
+      <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </aside>
+    <main class="main-content">
+      <div class="ratings-container">
+        <div class="ratings-header">
+          <i class="fas fa-star"></i>
+          <h2>Rate Products</h2>
+        </div>
+        <div class="product-select">
+          <label for="productSelect">Select a Product to Rate:</label>
+          <select id="productSelect">
+            <option value="">Choose a product...</option>
+          </select>
+        </div>
+        <div class="rating-stars" id="ratingStars">
+          <i class="fas fa-star star" data-rating="1"></i>
+          <i class="fas fa-star star" data-rating="2"></i>
+          <i class="fas fa-star star" data-rating="3"></i>
+          <i class="fas fa-star star" data-rating="4"></i>
+          <i class="fas fa-star star" data-rating="5"></i>
+        </div>
+        <div class="review-section">
+          <label for="reviewText">Your Review (optional):</label>
+          <textarea id="reviewText" placeholder="Share your experience with this product..."></textarea>
+        </div>
+        <button class="submit-button" id="submitRating">Submit Rating</button>
+        <div class="status-message" id="statusMessage"></div>
+      </div>
+    </main>
+  </div>
+  <script>
+    let customerId = null;
+    function loadCustomerProfile() {
+      return fetch('/api/customer/id')
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Failed to fetch customer ID');
+          }
+          return res.json();
+        })
+        .then(data => {
+          customerId = data.customer_id;
+          if (!customerId) {
+            showStatus('Error: Customer ID not found', 'error');
+            throw new Error('Customer ID not found');
+          }
+        })
+        .catch(error => {
+          showStatus('Error loading customer ID. Please try again.', 'error');
+          throw error;
+        });
+    }
+    function loadProducts() {
+      fetch('/api/products')
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Failed to fetch products');
+          }
+          return res.json();
+        })
+        .then(products => {
+          const select = document.getElementById('productSelect');
+          select.innerHTML = '<option value="">Choose a product...</option>';
+          products.forEach(product => {
+            const option = document.createElement('option');
+            option.value = product.id;
+            option.textContent = product.name;
+            select.appendChild(option);
+          });
+        })
+        .catch(error => {
+          showStatus('Error loading products. Please try again.', 'error');
+        });
+    }
+    const stars = document.querySelectorAll('.star');
+    stars.forEach(star => {
+      star.addEventListener('click', function() {
+        const rating = this.dataset.rating;
+        stars.forEach(s => {
+          s.classList.toggle('active', s.dataset.rating <= rating);
+        });
+      });
+    });
+    document.getElementById('submitRating').addEventListener('click', function() {
+      const product_id = document.getElementById('productSelect').value;
+      const rating = document.querySelectorAll('.star.active').length;
+      const review_text = document.getElementById('reviewText').value;
+  
+      if (!product_id) {
+        showStatus('Please select a product', 'error');
+        return;
+      }
+      if (!rating) {
+        showStatus('Please provide a rating', 'error');
+        return;
+      }
+      if (!customerId) {
+        showStatus('Customer ID not loaded. Please refresh the page.', 'error');
+        return;
+      }
+  
+      fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_id,
+          rating,
+          customer_id: customerId,
+          review_text
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          showStatus(data.error, 'error');
+        } else {
+          showStatus('Thank you for your rating!', 'success');
+          resetForm();
+        }
+      })
+      .catch(error => {
+        showStatus('Error submitting rating. Please try again.', 'error');
+      });
+    });
+  
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.textContent = message;
+      statusDiv.className = `status-message ${type}`;
+      statusDiv.style.display = 'block';
+      setTimeout(() => {
+        statusDiv.style.display = 'none';
+      }, 3000);
+    }
+  
+    function resetForm() {
+      document.getElementById('productSelect').value = '';
+      document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+      document.getElementById('reviewText').value = '';
+    }
+  
+    function logout() {
+      fetch('/api/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          window.location.href = '/login';
+        } else {
+          showStatus('Error logging out. Please try again.', 'error');
+        }
+      })
+      .catch(error => {
+        showStatus('Error logging out. Please try again.', 'error');
+      });
+    }
+  loadCustomerProfile().then(() => {
+      loadProducts();
+    });
+  </script>
+</body>
+</html>

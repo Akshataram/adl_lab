@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Farmer Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root { --primary-color: #8FB996; --secondary-color: #4E6151; --accent-color: #C8D5B9; --text-color: #6B7B62; --light-bg: #FAF9F6; --card-bg: #ffffff; --header-bg: rgba(255, 255, 255, 0.9);}
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { margin: 0; background-color: var(--light-bg); color: #222; overflow-x: hidden; }
+    .background-animation { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: linear-gradient(120deg, #FAF9F6 0%, #C8D5B9 100%);}
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: var(--text-color); color: #fff; display: flex; flex-direction: column; padding: 2rem 1rem; min-height: 100vh; }
+    .sidebar-logo { font-size: 1.5rem; font-weight: bold; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 1.5rem; }
+    .nav-link { color: #fff; text-decoration: none; font-size: 1.1rem; display: flex; align-items: center; gap: 0.7rem; padding: 0.5rem 1rem; border-radius: 8px; transition: background 0.2s; }
+    .nav-link.active, .nav-link:hover { background: var(--primary-color); }
+    .logout-btn { margin-top: auto; background: #f87171; color: #fff; border: none; padding: 10px 0; border-radius: 8px; cursor: pointer; font-size: 1em; transition: background 0.2s; width: 100%; }
+    .logout-btn:hover { background: #ef4444; }
+    .main-content { flex: 1; padding: 3rem 2rem; background: transparent; min-height: 100vh; }
+    .profile-management { background: var(--card-bg); padding: 2rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);}
+    .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;}
+    .certification-badge { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 20px; background: #e0e0e0; color: #666;}
+    .certification-badge.certified { background: #4CAF50; color: white;}
+    .certification-badge i { font-size: 1.2rem;}
+    .profile-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;}
+    .profile-info-card { background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);}
+    .profile-info-card h3 { color: var(--secondary-color); margin-bottom: 1.5rem; font-size: 1.2rem;}
+    .info-group { margin-bottom: 1rem;}
+    .info-group label { display: block; color: #666; font-size: 0.9rem; margin-bottom: 0.3rem;}
+    .info-group p { color: var(--text-color); font-size: 1.1rem;}
+    .certification-form { display: flex; flex-direction: column; gap: 1rem;}
+    .rating-display { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;}
+    .stars { display: flex; gap: 0.3rem;}
+    .stars i { color: #ffd700; font-size: 1.2rem;}
+    .stars i.filled { color: #ffd700;}
+    .reviews-list { max-height: 300px; overflow-y: auto;}
+    .review-item { padding: 1rem; border-bottom: 1px solid #eee;}
+    .review-item:last-child { border-bottom: none;}
+    .review-item .reviewer { font-weight: bold; margin-bottom: 0.5rem;}
+    .review-item .review-text { color: #666; font-size: 0.9rem;}
+    .review-item .review-date { font-size: 0.8rem; color: #999; margin-top: 0.5rem;}
+    @media (max-width: 900px) {
+      .main-content { padding: 20px 5px; }
+      .sidebar { width: 100px; padding: 1rem 0.2rem; }
+      .sidebar-logo { font-size: 1.1rem; }
+      .nav-link { font-size: 0.9em; padding: 0.5rem 0.5rem; }
+      .main-content { margin-left: 0; }
+      .profile-management { padding: 1rem; }
+      .profile-content { grid-template-columns: 1fr; }
+      .profile-header { flex-direction: column; gap: 1rem; text-align: center;}
+    }
+  </style>
+</head>
+<body>
+  <div class="background-animation"></div>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><i class="fas fa-seedling"></i> <span>Farmer Menu</span></div>
+      <nav class="sidebar-nav">
+        <nav class="sidebar-nav">
+          <a href="{{ url_for('farmer_dashboard') }}" class="nav-link {% if request.endpoint == 'farmer_dashboard' %}active{% endif %}">
+            <i class="fas fa-chart-bar"></i> Dashboard
+          </a>
+          <a href="{{ url_for('farmer_products') }}" class="nav-link {% if request.endpoint == 'farmer_products' %}active{% endif %}">
+            <i class="fas fa-box"></i> Products
+          </a>
+          <a href="{{ url_for('farmer_orders') }}" class="nav-link {% if request.endpoint == 'farmer_orders' %}active{% endif %}">
+            <i class="fas fa-shopping-cart"></i> Orders
+          </a>
+          <a href="{{ url_for('farmer_promotions') }}" class="nav-link {% if request.endpoint == 'farmer_promotions' %}active{% endif %}">
+            <i class="fas fa-bullhorn"></i> Promotions
+          </a>
+          <a href="{{ url_for('farmer_negotiation') }}" class="nav-link {% if request.endpoint == 'farmer_negotiation' %}active{% endif %}">
+            <i class="fas fa-handshake"></i> Negotiations
+          </a>
+          <a href="{{ url_for('farmer_profile') }}" class="nav-link {% if request.endpoint == 'farmer_profile' %}active{% endif %}">
+            <i class="fas fa-user"></i> Profile
+          </a>
+        </nav>
+      </nav>
+      <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </aside>
+    <main class="main-content">
+      <div class="profile-management">
+        <div class="profile-header">
+          <h2>
+            {{ farmer.name }}
+          </h2>
+          <div class="certification-badge {% if cert_status == 'certified' %}certified{% endif %}" id="certificationStatus">
+            <i class="fas fa-certificate"></i>
+            <span>
+              {% if cert_status == 'certified' %}
+                Certified
+              {% else %}
+                Uncertified
+              {% endif %}
+            </span>
+          </div>
+        </div>
+        <div class="profile-content">
+          <div class="profile-info-card">
+            <h3>Personal Information</h3>
+            <div class="info-group">
+              <label>Name</label>
+              <p>{{ farmer.name }}</p>
+            </div>
+            <div class="info-group">
+              <label>Phone Number</label>
+              <p>{{ farmer.phone }}</p>
+            </div>
+            <div class="info-group">
+              <label>Email</label>
+              <p>{{ farmer.email }}</p>
+            </div>
+          </div>
+          <div class="profile-info-card">
+            <h3>Upload Certification</h3>
+            <form method="POST" enctype="multipart/form-data">
+              <div class="info-group">
+                <label for="certification_type">Certification Type</label>
+                <select name="certification_type" required>
+                  <option value="">Select certification</option>
+                  <option value="organic">Organic Certification</option>
+                  <option value="sustainable">Sustainable Farming</option>
+                  <option value="local">Local Producer</option>
+                </select>
+              </div>
+              <div class="info-group">
+                <label for="certification">Upload Certificate</label>
+                <input type="file" name="certification" accept=".pdf,.jpg,.jpeg,.png" required>
+              </div>
+              <button type="submit">Submit for Verification</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script>
+    async function initializeProfile() {
+      try {
+        const res = await fetch('/api/farmer/profile', { credentials: 'include' });
+        const farmer = await res.json();
+        document.getElementById('farmerName').textContent = farmer.name || 'Not set';
+        document.getElementById('farmerPhone').textContent = farmer.phone || 'Not set';
+        document.getElementById('farmerEmail').textContent = farmer.email;
+        updateRatingDisplay(farmer.rating || 0);
+        displayReviews(farmer.reviews || []);
+      } catch (err) {
+        alert('Failed to load profile.');
+      }
+    }
+    function updateRatingDisplay(rating) {
+      const stars = document.querySelectorAll('.rating-display .stars i');
+      const ratingText = document.getElementById('farmerRating');
+      stars.forEach((star, index) => {
+        if (index < Math.floor(rating)) {
+          star.classList.add('filled');
+        } else {
+          star.classList.remove('filled');
+        }
+      });
+      ratingText.textContent = rating.toFixed(1);
+    }
+    function displayReviews(reviews) {
+      const reviewsList = document.getElementById('reviewsList');
+      reviewsList.innerHTML = '';
+      if (reviews.length === 0) {
+        reviewsList.innerHTML = '<p class="no-reviews">No reviews yet</p>';
+        return;
+      }
+      reviews.forEach(review => {
+        const reviewItem = document.createElement('div');
+        reviewItem.className = 'review-item';
+        reviewItem.innerHTML = `
+          <div class="reviewer">${review.reviewerName || 'Anonymous'}</div>
+          <div class="review-text">${review.text}</div>
+          <div class="review-date">${new Date(review.date).toLocaleDateString()}</div>
+        `;
+        reviewsList.appendChild(reviewItem);
+      });
+    }
+    document.getElementById('submitCertification').addEventListener('click', async () => {
+      const certificationType = document.getElementById('certificationType').value;
+      const certificationFile = document.getElementById('certificationFile').files[0];
+      if (!certificationType || !certificationFile) {
+        alert('Please select a certification type and upload a certificate file');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('type', certificationType);
+      formData.append('file', certificationFile);
+      try {
+        await fetch('/api/farmer/certification', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include'
+        });
+        alert('Certification submitted for verification. You will be notified once verified.');
+        await initializeProfile();
+      } catch (err) {
+        alert('Failed to submit certification.');
+      }
+    });
+    function logout() {
+      window.location.href = '/logout';
+    }
+    initializeProfile();
+  </script>
+</body>
+</html>
