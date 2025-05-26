@@ -6,19 +6,6 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
 
-print("🧭 Working Directory:", os.getcwd())
-print("📁 Files in CWD:", os.listdir(os.getcwd()))
-
-# Check for common DB paths
-paths_to_check = [
-    "market.db",
-    "/opt/render/project/src/market.db",
-    "/tmp/market.db",
-    "/app/market.db",
-]
-
-for path in paths_to_check:
-    print(f"📌 Does {path} exist? {'✅ Yes' if os.path.exists(path) else '❌ No'}")
     
 app = Flask(__name__)
 
@@ -31,17 +18,6 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
-
-@app.route('/download-db')
-def download_db():
-    try:
-        db_path = '/opt/render/project/src/market.db'  # Path based on your logs
-        if os.path.exists(db_path):
-            return send_file(db_path, as_attachment=True)
-        else:
-            return f"❌ Database file not found at {db_path}", 404
-    except Exception as e:
-        return f"🔥 Internal Error: {str(e)}", 500
 
 @app.route('/')
 def index():
